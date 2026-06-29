@@ -112,18 +112,39 @@ export interface WorkflowStats {
   failed: number;
 }
 
+export type RushApprovalPolicy =
+  | "pre_approved"
+  | "manual_review"
+  | "not_allowed";
+
+export type DecorationMethod =
+  | "embroidery"
+  | "screen_print"
+  | "direct_to_garment"
+  | "heat_transfer";
+
+export type PreferredOrderSystem = "print_ops" | "merch_ops";
+
 export interface Customer {
   id: string;
   name: string;
   emailDomains: string[];
   active: boolean;
-  requiresManualApproval: boolean;
+  crmId: string;
+  defaultShippingLocation: string;
+  rushApprovalPolicy: RushApprovalPolicy;
+  approvedArtworkRefs: string[];
+  preferredDecorationMethod: DecorationMethod;
+  preferredOrderSystem: PreferredOrderSystem;
 }
 
 export interface CatalogItem {
   id: string;
   sku: string;
   name: string;
+  category: "apparel" | "headwear" | "bags";
   active: boolean;
   requiresArtwork: boolean;
+  supportedDecorationMethods: DecorationMethod[];
+  discontinuedReason?: string;
 }
