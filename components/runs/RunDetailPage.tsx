@@ -1,126 +1,115 @@
+import Link from "next/link";
+import { getInboxEmailById } from "@/lib/email/demoEmailSource";
+import { getCustomerById } from "@/lib/domain/mockCustomers";
 import { RunHeader } from "./RunHeader";
 import { RunSectionCard } from "./RunSectionCard";
 
-export function RunDetailPage() {
+interface RunDetailPageProps {
+  emailId: string;
+}
+
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function sourceLabel(source: string): string {
+  if (source === "demo") return "Demo Inbox";
+  if (source === "agentmail") return "AgentMail";
+  return source;
+}
+
+export function RunDetailPage({ emailId }: RunDetailPageProps) {
+  const email = getInboxEmailById(emailId);
+
+  if (!email) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24">
+        <div className="border border-border rounded-lg bg-surface px-8 py-10 text-center max-w-md">
+          <h2 className="text-base font-semibold text-foreground mb-2">Email not found</h2>
+          <p className="text-sm text-muted mb-6">
+            No inbox email matches the id <span className="font-mono text-xs">{emailId}</span>.
+          </p>
+          <Link
+            href="/work-queue"
+            className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-accent text-white hover:bg-accent/90 transition-colors"
+          >
+            Back to Work Queue
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const customerId = email.metadata?.customerId;
+  const customer = typeof customerId === "string" ? getCustomerById(customerId) : undefined;
+  const customerName = customer?.name ?? email.fromName;
+
   return (
     <div>
       <RunHeader
-        customer="Arbor Lane Co."
-        subject="Repeat hoodie order for July event"
-        status="completed"
-        runId="run-arborlane-001"
-        startedAt="2025-06-28 09:14"
+        customer={customerName}
+        subject={email.subject}
+        status={email.status}
+        runId={email.id}
+        startedAt={formatDateTime(email.receivedAt)}
       />
+
+      <div className="flex items-center gap-3 mb-5 text-xs text-muted">
+        <span>Source: {sourceLabel(email.source)}</span>
+        <span className="text-border">·</span>
+        <span>From: {email.fromName} &lt;{email.fromEmail}&gt;</span>
+        <span className="text-border">·</span>
+        <span>Received: {formatDateTime(email.receivedAt)}</span>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <RunSectionCard title="Original Email">
           <div className="space-y-2 text-foreground/80">
-            <div className="text-xs text-muted">From: orders@arborlane.co</div>
-            <div className="text-xs text-muted">Subject: July hoodie reorder — PO-4821</div>
-            <p className="mt-2 leading-relaxed">
-              Hi team, we&apos;d like to reorder 150 units of the classic pullover hoodie (style H-200) 
-              in Navy for our July company event. Same specs as last order. PO number is 4821. 
-              Need by July 15. Ship to our main warehouse. Thanks!
-            </p>
+            <div className="flex items-center gap-4 text-xs text-muted">
+              <span>From: {email.fromName} &lt;{email.fromEmail}&gt;</span>
+            </div>
+            <div className="text-xs text-muted">Subject: {email.subject}</div>
+            <pre className="mt-3 whitespace-pre-wrap leading-relaxed text-sm font-sans text-foreground/80">
+              {email.bodyText}
+            </pre>
           </div>
         </RunSectionCard>
 
         <RunSectionCard title="Extracted Order">
-          <div className="space-y-1.5">
-            <Row label="PO Number" value="PO-4821" />
-            <Row label="Customer" value="Arbor Lane Co." />
-            <Row label="Product" value="Classic Pullover Hoodie (H-200)" />
-            <Row label="Color" value="Navy" />
-            <Row label="Quantity" value="150" />
-            <Row label="Due Date" value="July 15, 2025" />
-            <Row label="Shipping" value="Main warehouse (on file)" />
-            <Row label="Decoration" value="Per previous order" />
-          </div>
+          <PlaceholderSection message="Extraction runs when the workflow is executed." />
         </RunSectionCard>
 
         <RunSectionCard title="Validation & Blockers">
-          <div className="space-y-2">
-            <ValidationRow label="PO number present" passed />
-            <ValidationRow label="Customer recognized" passed />
-            <ValidationRow label="Product in catalog" passed />
-            <ValidationRow label="Quantity valid" passed />
-            <ValidationRow label="Due date feasible" passed />
-            <ValidationRow label="Shipping destination on file" passed />
-            <ValidationRow label="Artwork reference available" passed />
-          </div>
+          <PlaceholderSection message="Validation runs after extraction is complete." />
         </RunSectionCard>
 
         <RunSectionCard title="Actions">
-          <div className="space-y-2">
-            <ActionRow label="Order job created" detail="JOB-20250628-001" />
-            <ActionRow label="CRM activity logged" detail="ACT-20250628-001" />
-            <ActionRow label="Customer reply drafted" detail="Confirmation email ready" />
-          </div>
+          <PlaceholderSection message="Actions are prepared after validation passes." />
         </RunSectionCard>
 
         <RunSectionCard title="Draft Reply">
-          <div className="text-foreground/80 leading-relaxed">
-            <p className="text-xs text-muted mb-2">To: orders@arborlane.co</p>
-            <p>
-              Hi Arbor Lane team, we&apos;ve received your order for 150× Classic Pullover Hoodies 
-              (Navy, H-200) under PO-4821. Production is confirmed with a target ship date 
-              aligned to your July 15 deadline. We&apos;ll follow up with tracking. Thanks!
-            </p>
-          </div>
+          <PlaceholderSection message="A customer reply is drafted after actions are prepared." />
         </RunSectionCard>
 
         <RunSectionCard title="Audit Trace">
-          <div className="space-y-2">
-            <TraceRow time="09:14:00" step="Email received" />
-            <TraceRow time="09:14:01" step="Intent classified: purchase_order" />
-            <TraceRow time="09:14:01" step="Order details extracted" />
-            <TraceRow time="09:14:02" step="Customer lookup: matched" />
-            <TraceRow time="09:14:02" step="Catalog lookup: H-200 active" />
-            <TraceRow time="09:14:03" step="Validation: all rules passed" />
-            <TraceRow time="09:14:03" step="Risk score: low (0.12)" />
-            <TraceRow time="09:14:03" step="Route decision: auto-process" />
-            <TraceRow time="09:14:04" step="Job created: JOB-20250628-001" />
-            <TraceRow time="09:14:04" step="CRM logged: ACT-20250628-001" />
-            <TraceRow time="09:14:04" step="Draft reply generated" />
-          </div>
+          <PlaceholderSection message="The trace timeline populates as workflow steps execute." />
         </RunSectionCard>
       </div>
     </div>
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function PlaceholderSection({ message }: { message: string }) {
   return (
-    <div className="flex items-center justify-between py-1 border-b border-border last:border-0">
-      <span className="text-muted text-xs">{label}</span>
-      <span className="text-foreground font-medium text-xs">{value}</span>
-    </div>
-  );
-}
-
-function ValidationRow({ label, passed }: { label: string; passed: boolean }) {
-  return (
-    <div className="flex items-center gap-2 text-xs">
-      <span className={`w-1.5 h-1.5 rounded-full ${passed ? "bg-success" : "bg-danger"}`} />
-      <span className={passed ? "text-foreground/70" : "text-danger"}>{label}</span>
-    </div>
-  );
-}
-
-function ActionRow({ label, detail }: { label: string; detail: string }) {
-  return (
-    <div className="flex items-center justify-between py-1">
-      <span className="text-xs text-foreground/80">{label}</span>
-      <span className="text-xs font-mono text-muted">{detail}</span>
-    </div>
-  );
-}
-
-function TraceRow({ time, step }: { time: string; step: string }) {
-  return (
-    <div className="flex items-start gap-3 py-1">
-      <span className="text-[11px] font-mono text-muted shrink-0">{time}</span>
-      <span className="text-xs text-foreground/80">{step}</span>
+    <div className="flex items-center justify-center py-6">
+      <p className="text-xs text-muted italic">{message}</p>
     </div>
   );
 }

@@ -1,7 +1,18 @@
-type Status = "ready" | "blocked" | "completed" | "needs_review" | "new";
+export type Status =
+  | "new"
+  | "queued"
+  | "processing"
+  | "processed"
+  | "blocked"
+  | "ready"
+  | "completed"
+  | "needs_review";
 
 const statusStyles: Record<Status, string> = {
   new: "bg-accent/10 text-accent",
+  queued: "bg-accent/10 text-accent",
+  processing: "bg-warning/10 text-warning",
+  processed: "bg-success/10 text-success",
   ready: "bg-success/10 text-success",
   blocked: "bg-danger/10 text-danger",
   completed: "bg-foreground/8 text-foreground/70",
@@ -10,6 +21,9 @@ const statusStyles: Record<Status, string> = {
 
 const statusLabels: Record<Status, string> = {
   new: "New",
+  queued: "Queued",
+  processing: "Processing",
+  processed: "Processed",
   ready: "Ready",
   blocked: "Blocked",
   completed: "Completed",

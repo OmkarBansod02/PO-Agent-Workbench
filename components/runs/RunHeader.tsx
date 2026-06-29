@@ -1,9 +1,9 @@
-import { StatusBadge } from "../app/StatusBadge";
+import { StatusBadge, type Status } from "../app/StatusBadge";
 
 interface RunHeaderProps {
   customer: string;
   subject: string;
-  status: "ready" | "blocked" | "completed" | "needs_review" | "new";
+  status: Status;
   runId: string;
   startedAt: string;
 }
