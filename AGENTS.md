@@ -360,19 +360,21 @@ Use clear labels:
 * Avoid installing unnecessary packages
 * Do not introduce a database before the core workflow works
 * Keep functions small and named around business meaning
-* Mock integrations should look like real adapter boundaries
+* Mock integrations should look like real adapter boundaries 
 
-## Testing / Verification
+## First Screen Rule
 
-At minimum:
+A user should understand the product within 15–20 seconds.
 
-* The app must run locally
-* All 3 demo scenarios must work
-* Each scenario must produce a trace
-* Clean PO must create mock job
-* Bad PO must route to review
-* Human review should allow fixing/approving at least one case
-* README must explain architecture and tradeoffs
+The first screen must clearly communicate:
+- This is a purchase order intake workflow app
+- Incoming emails become workflow runs
+- The system extracts and validates order details
+- Risky/missing data becomes blockers
+- Safe actions prepare order jobs, CRM activity, and customer replies
+- Every run has an audit trace
+
+Do not make the UI feel like a test dashboard, mock playground, or chatbot.
 
 ## README Must Explain
 
