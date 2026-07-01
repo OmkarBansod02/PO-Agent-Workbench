@@ -5,14 +5,22 @@ interface RunHeaderProps {
   customer: string;
   subject: string;
   status: Status;
+  source: string;
   emailId: string;
   receivedAt: string;
+}
+
+function sourceLabel(source: string): string {
+  if (source === "demo") return "Demo Inbox";
+  if (source === "agentmail") return "AgentMail";
+  return source;
 }
 
 export function RunHeader({
   customer,
   subject,
   status,
+  source,
   emailId,
   receivedAt,
 }: RunHeaderProps) {
@@ -23,7 +31,7 @@ export function RunHeader({
           href="/work-queue"
           className="text-xs text-muted hover:text-foreground transition-colors"
         >
-          ← Work Queue
+          &larr; Work Queue
         </Link>
       </div>
       <div className="flex items-start justify-between">
@@ -36,9 +44,12 @@ export function RunHeader({
         <StatusBadge status={status} />
       </div>
       <div className="flex items-center gap-4 mt-3 text-xs text-muted">
+        <span>Source: {sourceLabel(source)}</span>
+        <span className="text-border">&middot;</span>
         <span>
           Email: <span className="font-mono">{emailId}</span>
         </span>
+        <span className="text-border">&middot;</span>
         <span>Received: {receivedAt}</span>
       </div>
     </div>
