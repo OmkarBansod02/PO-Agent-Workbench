@@ -1,6 +1,22 @@
-import type { InboxEmail } from "./types";
+import type {
+  DemoExpectedOutcome,
+  InboxEmail,
+  InboxEmailMetadata,
+} from "./types";
 
-export const demoInboxEmails: InboxEmail[] = [
+interface DemoInboxEmailMetadata extends InboxEmailMetadata {
+  customerId: string;
+  scenarioLabel: string;
+  previewSignal: string;
+  expectedOutcome: DemoExpectedOutcome;
+}
+
+export type DemoInboxEmail = Omit<InboxEmail, "source" | "metadata"> & {
+  source: "demo";
+  metadata: DemoInboxEmailMetadata;
+};
+
+export const demoInboxEmails: DemoInboxEmail[] = [
   {
     id: "email-clean-po",
     source: "demo",
@@ -29,6 +45,8 @@ Events Operations Manager
     metadata: {
       customerId: "customer-arbor-lane",
       scenarioLabel: "Clean PO",
+      previewSignal: "Complete repeat order with approved artwork",
+      expectedOutcome: "completed",
     },
   },
   {
@@ -52,6 +70,8 @@ Field Operations Coordinator`,
     metadata: {
       customerId: "customer-north-ridge",
       scenarioLabel: "Missing data PO",
+      previewSignal: "Rush request with no PO and uncertain quantity",
+      expectedOutcome: "needs_review",
     },
   },
   {
@@ -75,9 +95,19 @@ Priya Shah
 Studio Operations Lead`,
     receivedAt: "2026-06-29T10:08:00.000Z",
     status: "new",
+    attachments: [
+      {
+        id: "attachment-maple-wordmark-draft",
+        fileName: "MW-WORDMARK-2026-DRAFT.pdf",
+        contentType: "application/pdf",
+        sizeBytes: 428_160,
+      },
+    ],
     metadata: {
       customerId: "customer-maple-works",
       scenarioLabel: "Artwork/change review PO",
+      previewSignal: "Reorder includes revised artwork requiring proof approval",
+      expectedOutcome: "needs_review",
     },
   },
   {
@@ -104,23 +134,25 @@ Conference Logistics Manager`,
     metadata: {
       customerId: "customer-cedar-peak",
       scenarioLabel: "Risky/catalog issue PO",
+      previewSignal: "Discontinued tote requested on a tight deadline",
+      expectedOutcome: "blocked",
     },
   },
 ];
 
-function copyInboxEmail(email: InboxEmail): InboxEmail {
+function copyInboxEmail(email: DemoInboxEmail): DemoInboxEmail {
   return {
     ...email,
     attachments: email.attachments?.map((attachment) => ({ ...attachment })),
-    metadata: email.metadata ? { ...email.metadata } : undefined,
+    metadata: { ...email.metadata },
   };
 }
 
-export function getDemoInboxEmails(): InboxEmail[] {
+export function getDemoInboxEmails(): DemoInboxEmail[] {
   return demoInboxEmails.map(copyInboxEmail);
 }
 
-export function getInboxEmailById(id: string): InboxEmail | undefined {
+export function getInboxEmailById(id: string): DemoInboxEmail | undefined {
   const email = demoInboxEmails.find((candidate) => candidate.id === id);
   return email ? copyInboxEmail(email) : undefined;
 }
@@ -128,6 +160,6 @@ export function getInboxEmailById(id: string): InboxEmail | undefined {
 // Kept as a compatibility alias for callers created during the initial scaffold.
 export const demoEmails = demoInboxEmails;
 
-export function getDemoEmails(): InboxEmail[] {
+export function getDemoEmails(): DemoInboxEmail[] {
   return getDemoInboxEmails();
 }

@@ -14,6 +14,17 @@ export interface EmailAttachment {
   sizeBytes: number;
 }
 
+export type DemoExpectedOutcome = "completed" | "needs_review" | "blocked";
+
+export interface InboxEmailMetadata {
+  customerId?: string;
+  scenarioLabel?: string;
+  previewSignal?: string;
+  /** Demo-only expectation for the UI; workflow routing must not read this value. */
+  expectedOutcome?: DemoExpectedOutcome;
+  [key: string]: unknown;
+}
+
 export interface InboxEmail {
   id: string;
   source: EmailSourceType;
@@ -24,5 +35,5 @@ export interface InboxEmail {
   receivedAt: string;
   status: EmailProcessingStatus;
   attachments?: EmailAttachment[];
-  metadata?: Record<string, unknown>;
+  metadata?: InboxEmailMetadata;
 }
