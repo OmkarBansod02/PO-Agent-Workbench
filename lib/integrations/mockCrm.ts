@@ -1,12 +1,18 @@
 import type {
   CrmActivityInput,
-  CrmActivityResult,
+  CrmActivityPayload,
 } from "./adapters";
+import { createId } from "../utils/ids";
 
 export async function logMockCrmActivity(
   input: CrmActivityInput,
-): Promise<CrmActivityResult> {
-  void input;
-  // TODO: Store and return a mock CRM activity in a later phase.
-  throw new Error("TODO: Implement the mock CRM adapter.");
+): Promise<CrmActivityPayload> {
+  return {
+    activityId: createId("crm_activity"),
+    customerId: input.customerId,
+    type: input.type,
+    summary: `${input.summary} Outcome: ${input.outcome}.`,
+    linkedWorkflowRunId: input.workflowRunId,
+    linkedEmailId: input.emailId,
+  };
 }

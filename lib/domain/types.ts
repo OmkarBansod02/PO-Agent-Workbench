@@ -22,6 +22,27 @@ export type IntegrationStatus =
   | "completed"
   | "failed";
 
+export type WorkflowActionType =
+  | "order_job"
+  | "crm_activity"
+  | "review_task"
+  | "reply_draft";
+
+export type WorkflowActionStatus = "prepared" | "skipped" | "blocked";
+
+export type ReplyDraftType =
+  | "confirmation"
+  | "clarification"
+  | "review_required";
+
+export interface ReplyDraft {
+  subject: string;
+  body: string;
+  tone: "professional";
+  draftType: ReplyDraftType;
+  method: ExtractionMethod;
+}
+
 export interface WorkflowStep {
   id: string;
   name: string;
@@ -63,10 +84,12 @@ export interface ValidationIssue {
 
 export interface WorkflowAction {
   id: string;
-  type: string;
-  label: string;
-  status: IntegrationStatus;
-  output?: Record<string, unknown>;
+  type: WorkflowActionType;
+  status: WorkflowActionStatus;
+  title: string;
+  summary: string;
+  payload: Record<string, unknown>;
+  createdAt: string;
 }
 
 export interface TraceEvent {
@@ -118,6 +141,7 @@ export interface WorkflowRun {
   blockers: Blocker[];
   approvalGates: ApprovalGate[];
   actions: WorkflowAction[];
+  draftReply?: ReplyDraft;
   draftEmail?: string;
   traceEvents: TraceEvent[];
   createdAt: string;

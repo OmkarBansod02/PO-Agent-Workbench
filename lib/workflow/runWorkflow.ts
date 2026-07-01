@@ -9,6 +9,7 @@ import type {
 import { createId } from "../utils/ids";
 import { nowIso } from "../utils/dates";
 import { blockersFromValidation, createBlocker } from "./blockers";
+import { executeWorkflowActions } from "./executeActions";
 import { matchCatalog } from "./matchCatalog";
 import { matchCustomer } from "./matchCustomer";
 import { calculateRiskScore } from "./riskScore";
@@ -162,11 +163,22 @@ export async function runPOWorkflow(
       title: "Route decided",
       message:
         decision === "completed"
-          ? "The intake is clean enough for downstream actions in a later phase."
+          ? "The intake is clean enough for simulated downstream actions."
           : decision === "needs_review"
             ? "The intake is held for safe human review."
             : "Required or unsafe order data blocks downstream processing.",
       metadata: { routeDecision: decision, riskScore },
+    });
+
+    const { actions, draftReply } = await executeWorkflowActions({
+      runId,
+      emailId: input.emailId,
+      decision,
+      extractedOrder,
+      customer: customerMatch.customer,
+      validationIssues,
+      blockers,
+      traceEvents,
     });
 
     return {
@@ -186,7 +198,9 @@ export async function runPOWorkflow(
       routeDecision: decision,
       blockers,
       approvalGates: [],
-      actions: [],
+      actions,
+      draftReply,
+      draftEmail: draftReply.body,
       traceEvents,
       createdAt,
       updatedAt: nowIso(),

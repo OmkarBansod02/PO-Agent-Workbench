@@ -29,3 +29,12 @@ export const purchaseOrderExtractionSchema = z.object({
 export type PurchaseOrderExtractionSchema = z.infer<
   typeof purchaseOrderExtractionSchema
 >;
+
+export const replyDraftSchema = z.object({
+  subject: z.string().min(1),
+  body: z.string().min(1),
+  tone: z.literal("professional"),
+  draftType: z.enum(["confirmation", "clarification", "review_required"]),
+});
+
+export type ReplyDraftSchema = z.infer<typeof replyDraftSchema>;
