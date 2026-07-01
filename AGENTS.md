@@ -387,7 +387,47 @@ Do not make the UI feel like a test dashboard, mock playground, or chatbot.
 * Trace/audit design
 * Multi-customer config
 * Tradeoffs
-* What would be next in production
+* What would be next in production 
+
+## AI Runtime Rule
+
+This project should feel like a real AI workflow product, not a deterministic parser demo.
+
+Use real AI for:
+
+* intent classification
+* structured purchase order extraction
+* uncertainty detection
+* customer reply drafting
+
+Use deterministic code for:
+
+* customer lookup
+* catalog lookup
+* business rule validation
+* blocker creation
+* route decision
+* action safety
+* audit trace
+
+The LLM must not be the final authority for business execution.
+
+If AI extraction fails or no API key is configured, the system may fall back to deterministic extraction so the local demo still works.
+
+Every workflow run should clearly show:
+
+* extraction method: ai | fallback
+* model name if available
+* confidence
+* uncertain fields
+* validation issues
+* route decision
+* trace events
+
+Do not build a chatbot UI.
+Do not hide business rules inside prompts.
+Do not let AI create downstream actions without deterministic validation.
+
 
 ## Sprint Rule
 
