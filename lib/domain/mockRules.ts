@@ -8,7 +8,7 @@ export interface MockBusinessRules {
     | "catalogItemId"
     | "quantity"
     | "dueDate"
-    | "shippingDestination"
+    | "shippingLocation"
   >>;
   rush: {
     thresholdDays: number;
@@ -43,7 +43,7 @@ export const mockRules: MockBusinessRules = {
     "catalogItemId",
     "quantity",
     "dueDate",
-    "shippingDestination",
+    "shippingLocation",
   ],
   rush: {
     thresholdDays: 7,

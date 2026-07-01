@@ -14,3 +14,12 @@ export function createTraceEvent(input: CreateTraceEventInput): TraceEvent {
     timestamp: input.timestamp ?? nowIso(),
   };
 }
+
+export function addTraceEvent(
+  traceEvents: TraceEvent[],
+  input: CreateTraceEventInput,
+): TraceEvent {
+  const event = createTraceEvent(input);
+  traceEvents.push(event);
+  return event;
+}

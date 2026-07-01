@@ -6,6 +6,16 @@ export type WorkflowRunStatus =
   | "needs_review"
   | "failed";
 
+export type PurchaseOrderIntent =
+  | "new_order"
+  | "reorder"
+  | "order_change"
+  | "unclear";
+
+export type ExtractionMethod = "ai" | "fallback";
+
+export type RouteDecision = "completed" | "needs_review" | "blocked";
+
 export type IntegrationStatus =
   | "not_started"
   | "pending"
@@ -27,14 +37,20 @@ export interface WorkflowDefinition {
 }
 
 export interface ExtractedOrder {
+  customerName?: string;
+  requesterName?: string;
+  requesterEmail?: string;
   poNumber?: string;
+  productName?: string;
+  color?: string;
   customerId?: string;
   catalogItemId?: string;
   quantity?: number;
   dueDate?: string;
   artworkReference?: string;
-  shippingDestination?: string;
+  shippingLocation?: string;
   sizeBreakdown?: Record<string, number>;
+  notes?: string;
 }
 
 export interface ValidationIssue {
@@ -71,6 +87,7 @@ export interface Blocker {
   title: string;
   message: string;
   severity: "warning" | "error";
+  blocksProgress: boolean;
   field?: keyof ExtractedOrder;
 }
 
@@ -87,12 +104,17 @@ export interface WorkflowRun {
   runId: string;
   definitionId: string;
   emailId: string;
+  source: "demo" | "agentmail";
   status: WorkflowRunStatus;
-  intent?: string;
-  extractedOrder?: ExtractedOrder;
-  validations: ValidationIssue[];
-  riskScore?: number;
-  decision?: string;
+  intent: PurchaseOrderIntent;
+  extractedOrder: ExtractedOrder;
+  extractionMethod: ExtractionMethod;
+  aiModel?: string;
+  aiConfidence: number;
+  uncertainFields: string[];
+  validationIssues: ValidationIssue[];
+  riskScore: number;
+  routeDecision: RouteDecision;
   blockers: Blocker[];
   approvalGates: ApprovalGate[];
   actions: WorkflowAction[];
