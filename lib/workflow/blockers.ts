@@ -24,17 +24,35 @@ const PROGRESS_BLOCKING_CODES = new Set([
   "INVALID_DUE_DATE",
 ]);
 
+const REVIEW_REQUIRED_CODES = new Set([
+  "RUSH_DUE_DATE",
+  "ORDER_CHANGE_REQUIRES_REVIEW",
+  "UNCLEAR_REORDER_REFERENCE",
+  "UNAPPROVED_ARTWORK",
+  "BELOW_MINIMUM_QUANTITY",
+  "SIZE_BREAKDOWN_MISMATCH",
+  "LOW_EXTRACTION_CONFIDENCE",
+  "CRITICAL_UNCERTAIN_FIELDS",
+  "UNCLEAR_INTENT",
+  "CUSTOMER_IDENTITY_CONFLICT",
+]);
+
 export function blockersFromValidation(
   validationIssues: ValidationIssue[],
 ): Blocker[] {
-  return validationIssues.map((validation) =>
-    createBlocker({
+  return validationIssues.flatMap((validation) => {
+    const blocksProgress = PROGRESS_BLOCKING_CODES.has(validation.code);
+    const requiresReview = REVIEW_REQUIRED_CODES.has(validation.code);
+
+    if (!blocksProgress && !requiresReview) return [];
+
+    return createBlocker({
       code: validation.code,
       title: validation.message,
       message: validation.message,
       severity: validation.severity,
-      blocksProgress: PROGRESS_BLOCKING_CODES.has(validation.code),
+      blocksProgress,
       field: validation.field,
-    }),
-  );
+    });
+  });
 }

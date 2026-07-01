@@ -12,6 +12,7 @@ export interface ValidateOrderInput {
   extractedOrder: ExtractedOrder;
   intent: PurchaseOrderIntent;
   customer?: Customer;
+  customerMatchedBy?: "customer_id" | "name" | "email_domain";
   catalogItem?: CatalogItem;
   confidence: number;
   uncertainFields: string[];
@@ -59,6 +60,7 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
   } else if (!customer.active) {
     issues.push(issue("INACTIVE_CUSTOMER", "The matched customer is inactive.", "error", "customerId"));
   } else if (
+    input.customerMatchedBy !== "customer_id" &&
     order.customerName &&
     order.customerName.toLowerCase() !== customer.name.toLowerCase()
   ) {
@@ -140,14 +142,41 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
   if (input.confidence < 0.65) {
     issues.push(issue("LOW_EXTRACTION_CONFIDENCE", "Extraction confidence is below the safe auto-processing threshold.", "warning"));
   }
+
+  const criticalUncertainFields = new Set<keyof ExtractedOrder>([
+    "productName",
+    "quantity",
+    "dueDate",
+    "poNumber",
+    "shippingLocation",
+  ]);
+  if (catalogItem?.requiresArtwork) {
+    criticalUncertainFields.add("artworkReference");
+  }
+
   const unresolvedUncertainty = input.uncertainFields.filter(
     (field) => order[field as keyof ExtractedOrder] !== undefined,
   );
-  if (unresolvedUncertainty.length > 0) {
+  const criticalUncertainty = unresolvedUncertainty.filter((field) =>
+    criticalUncertainFields.has(field as keyof ExtractedOrder),
+  );
+  const nonCriticalUncertainty = unresolvedUncertainty.filter(
+    (field) => !criticalUncertainFields.has(field as keyof ExtractedOrder),
+  );
+  if (criticalUncertainty.length > 0) {
     issues.push(
       issue(
-        "UNCERTAIN_EXTRACTED_FIELDS",
-        `Extracted values remain uncertain: ${unresolvedUncertainty.join(", ")}.`,
+        "CRITICAL_UNCERTAIN_FIELDS",
+        `Critical extracted values remain uncertain: ${criticalUncertainty.join(", ")}.`,
+        "warning",
+      ),
+    );
+  }
+  if (nonCriticalUncertainty.length > 0) {
+    issues.push(
+      issue(
+        "NON_CRITICAL_UNCERTAIN_FIELDS",
+        `Non-critical extracted values remain uncertain: ${nonCriticalUncertainty.join(", ")}.`,
         "warning",
       ),
     );

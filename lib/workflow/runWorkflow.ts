@@ -75,20 +75,29 @@ export async function runPOWorkflow(
       extractedOrder,
       rawEmail: input.rawEmail,
     });
+    let defaultShippingApplied = false;
     if (customerMatch.customer) {
       extractedOrder.customerId = customerMatch.customer.id;
       extractedOrder.customerName ??= customerMatch.customer.name;
+      if (!extractedOrder.shippingLocation) {
+        extractedOrder.shippingLocation =
+          customerMatch.customer.defaultShippingLocation;
+        defaultShippingApplied = true;
+      }
     }
     addTraceEvent(traceEvents, {
       step: "customer_matched",
       status: customerMatch.customer ? "completed" : "blocked",
       title: customerMatch.customer ? "Customer matched" : "Customer not matched",
       message: customerMatch.customer
-        ? `${customerMatch.customer.name} matched through local customer configuration.`
+        ? customerMatch.matchedBy === "customer_id"
+          ? `${customerMatch.customer.name} matched from inbox metadata.`
+          : `${customerMatch.customer.name} matched through local customer configuration.`
         : "No safe customer match was found in local configuration.",
       metadata: {
         customerId: customerMatch.customer?.id,
         matchedBy: customerMatch.matchedBy,
+        defaultShippingApplied,
       },
     });
 
@@ -118,6 +127,7 @@ export async function runPOWorkflow(
       extractedOrder,
       intent,
       customer: customerMatch.customer,
+      customerMatchedBy: customerMatch.matchedBy,
       catalogItem: catalogMatch.catalogItem,
       confidence: extraction.confidence,
       uncertainFields: extraction.uncertainFields,
@@ -136,7 +146,12 @@ export async function runPOWorkflow(
           : `${validationIssues.length} validation issue${validationIssues.length === 1 ? " was" : "s were"} found.`,
       metadata: {
         issueCodes: validationIssues.map(({ code }) => code),
+        warningIssueCount: validationIssues.filter(
+          ({ severity }) => severity === "warning",
+        ).length,
         blockingIssueCount: blockers.filter(({ blocksProgress }) => blocksProgress)
+          .length,
+        reviewIssueCount: blockers.filter(({ blocksProgress }) => !blocksProgress)
           .length,
         riskScore,
       },
