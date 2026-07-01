@@ -6,10 +6,16 @@ import { getDemoInboxEmails } from "@/lib/email/demoEmailSource";
 export function WorkQueuePage() {
   const emails = getDemoInboxEmails();
 
-  const newCount = emails.filter((e) => e.status === "new").length;
-  const queuedCount = emails.filter((e) => e.status === "queued" || e.status === "processing").length;
-  const blockedCount = emails.filter((e) => e.status === "blocked").length;
-  const processedCount = emails.filter((e) => e.status === "processed").length;
+  const incoming = emails.length;
+  const ready = emails.filter(
+    (e) => e.metadata.expectedOutcome === "completed",
+  ).length;
+  const needsReview = emails.filter(
+    (e) => e.metadata.expectedOutcome === "needs_review",
+  ).length;
+  const blocked = emails.filter(
+    (e) => e.metadata.expectedOutcome === "blocked",
+  ).length;
 
   return (
     <div>
@@ -20,21 +26,23 @@ export function WorkQueuePage() {
 
       <div className="border border-border rounded-lg bg-surface px-4 py-3 mb-5">
         <div className="text-sm font-medium text-foreground">
-          Email → Order System → CRM → Customer Reply
+          Email → Extract → Validate → Route → Actions → Reply
         </div>
         <p className="text-xs text-muted mt-1">
-          Extracts order details, validates business rules, prepares downstream actions, and escalates blockers.
+          Each email becomes a workflow run. Order details are extracted,
+          validated against business rules, and routed for processing or human
+          review.
         </p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-6">
-        <MetricCard label="New" value={newCount} color="accent" />
-        <MetricCard label="In Progress" value={queuedCount} color="success" />
-        <MetricCard label="Blocked" value={blockedCount} color="danger" />
-        <MetricCard label="Processed" value={processedCount} />
+        <MetricCard label="Incoming" value={incoming} color="accent" />
+        <MetricCard label="Ready" value={ready} color="success" />
+        <MetricCard label="Needs Review" value={needsReview} color="warning" />
+        <MetricCard label="Blocked" value={blocked} color="danger" />
       </div>
 
-      <WorkQueueTable />
+      <WorkQueueTable emails={emails} />
     </div>
   );
 }

@@ -32,9 +32,12 @@ export function RunDetailPage({ emailId }: RunDetailPageProps) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
         <div className="border border-border rounded-lg bg-surface px-8 py-10 text-center max-w-md">
-          <h2 className="text-base font-semibold text-foreground mb-2">Email not found</h2>
+          <h2 className="text-base font-semibold text-foreground mb-2">
+            Email not found
+          </h2>
           <p className="text-sm text-muted mb-6">
-            No inbox email matches the id <span className="font-mono text-xs">{emailId}</span>.
+            No inbox email matches the id{" "}
+            <span className="font-mono text-xs">{emailId}</span>.
           </p>
           <Link
             href="/work-queue"
@@ -47,8 +50,7 @@ export function RunDetailPage({ emailId }: RunDetailPageProps) {
     );
   }
 
-  const customerId = email.metadata?.customerId;
-  const customer = typeof customerId === "string" ? getCustomerById(customerId) : undefined;
+  const customer = getCustomerById(email.metadata.customerId);
   const customerName = customer?.name ?? email.fromName;
 
   return (
@@ -57,14 +59,16 @@ export function RunDetailPage({ emailId }: RunDetailPageProps) {
         customer={customerName}
         subject={email.subject}
         status={email.status}
-        runId={email.id}
-        startedAt={formatDateTime(email.receivedAt)}
+        emailId={email.id}
+        receivedAt={formatDateTime(email.receivedAt)}
       />
 
       <div className="flex items-center gap-3 mb-5 text-xs text-muted">
         <span>Source: {sourceLabel(email.source)}</span>
         <span className="text-border">·</span>
-        <span>From: {email.fromName} &lt;{email.fromEmail}&gt;</span>
+        <span>
+          From: {email.fromName} &lt;{email.fromEmail}&gt;
+        </span>
         <span className="text-border">·</span>
         <span>Received: {formatDateTime(email.receivedAt)}</span>
       </div>
@@ -73,7 +77,9 @@ export function RunDetailPage({ emailId }: RunDetailPageProps) {
         <RunSectionCard title="Original Email">
           <div className="space-y-2 text-foreground/80">
             <div className="flex items-center gap-4 text-xs text-muted">
-              <span>From: {email.fromName} &lt;{email.fromEmail}&gt;</span>
+              <span>
+                From: {email.fromName} &lt;{email.fromEmail}&gt;
+              </span>
             </div>
             <div className="text-xs text-muted">Subject: {email.subject}</div>
             <pre className="mt-3 whitespace-pre-wrap leading-relaxed text-sm font-sans text-foreground/80">
@@ -83,33 +89,36 @@ export function RunDetailPage({ emailId }: RunDetailPageProps) {
         </RunSectionCard>
 
         <RunSectionCard title="Extracted Order">
-          <PlaceholderSection message="Extraction runs when the workflow is executed." />
+          <PendingSection message="Run the workflow in the next phase to extract order details." />
         </RunSectionCard>
 
         <RunSectionCard title="Validation & Blockers">
-          <PlaceholderSection message="Validation runs after extraction is complete." />
+          <PendingSection message="Validation runs after order details are extracted." />
         </RunSectionCard>
 
         <RunSectionCard title="Actions">
-          <PlaceholderSection message="Actions are prepared after validation passes." />
+          <PendingSection message="Actions are prepared after validation passes." />
         </RunSectionCard>
 
         <RunSectionCard title="Draft Reply">
-          <PlaceholderSection message="A customer reply is drafted after actions are prepared." />
+          <PendingSection message="A customer reply is drafted after actions are prepared." />
         </RunSectionCard>
 
         <RunSectionCard title="Audit Trace">
-          <PlaceholderSection message="The trace timeline populates as workflow steps execute." />
+          <PendingSection message="The audit trace populates as each workflow step executes." />
         </RunSectionCard>
       </div>
     </div>
   );
 }
 
-function PlaceholderSection({ message }: { message: string }) {
+function PendingSection({ message }: { message: string }) {
   return (
-    <div className="flex items-center justify-center py-6">
-      <p className="text-xs text-muted italic">{message}</p>
+    <div className="flex flex-col items-center justify-center py-8">
+      <div className="w-8 h-8 rounded-full bg-foreground/[0.04] flex items-center justify-center mb-3">
+        <div className="w-2 h-2 rounded-full bg-foreground/20" />
+      </div>
+      <p className="text-xs text-muted">{message}</p>
     </div>
   );
 }

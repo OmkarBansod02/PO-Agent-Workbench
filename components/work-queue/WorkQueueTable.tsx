@@ -1,24 +1,11 @@
 import Link from "next/link";
 import { StatusBadge } from "../app/StatusBadge";
-import { getDemoInboxEmails } from "@/lib/email/demoEmailSource";
 import { getCustomerById } from "@/lib/domain/mockCustomers";
-import type { InboxEmail } from "@/lib/email/types";
+import type { DemoInboxEmail } from "@/lib/email/demoEmailSource";
 
-function extractPoNumber(email: InboxEmail): string | null {
-  const poField = email.metadata?.poNumber;
-  if (typeof poField === "string") return poField;
-
-  const match = email.bodyText.match(/\bPO[-‑–]?\s*(\w[\w-]*\w)/i);
-  return match ? match[0] : null;
-}
-
-function resolveCustomerName(email: InboxEmail): string {
-  const customerId = email.metadata?.customerId;
-  if (typeof customerId === "string") {
-    const customer = getCustomerById(customerId);
-    if (customer) return customer.name;
-  }
-  return email.fromName;
+function resolveCustomerName(email: DemoInboxEmail): string {
+  const customer = getCustomerById(email.metadata.customerId);
+  return customer?.name ?? email.fromName;
 }
 
 function formatReceivedAt(iso: string): string {
@@ -38,9 +25,11 @@ function sourceLabel(source: string): string {
   return source;
 }
 
-export function WorkQueueTable() {
-  const emails = getDemoInboxEmails();
+interface WorkQueueTableProps {
+  emails: DemoInboxEmail[];
+}
 
+export function WorkQueueTable({ emails }: WorkQueueTableProps) {
   if (emails.length === 0) {
     return (
       <div className="border border-border rounded-lg bg-surface px-6 py-12 text-center">
@@ -54,20 +43,29 @@ export function WorkQueueTable() {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-background">
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Customer</th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Subject</th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Signal / PO #</th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Status</th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Source</th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">Received</th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Customer
+            </th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Subject
+            </th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Signal
+            </th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Status
+            </th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Source
+            </th>
+            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+              Received
+            </th>
           </tr>
         </thead>
         <tbody>
           {emails.map((email) => {
-            const customerName = resolveCustomerName(email);
-            const po = extractPoNumber(email);
-            const scenario = email.metadata?.scenarioLabel;
-            const signal = po ?? (typeof scenario === "string" ? scenario : "—");
+            const href = `/runs/${email.id}`;
 
             return (
               <tr
@@ -76,22 +74,29 @@ export function WorkQueueTable() {
               >
                 <td className="px-4 py-3">
                   <Link
-                    href={`/runs/${email.id}`}
+                    href={href}
                     className="font-medium text-foreground group-hover:text-accent transition-colors"
                   >
-                    {customerName}
+                    {resolveCustomerName(email)}
                   </Link>
                 </td>
                 <td className="px-4 py-3 text-foreground/80 max-w-xs truncate">
-                  <Link href={`/runs/${email.id}`} className="hover:text-foreground transition-colors">
+                  <Link
+                    href={href}
+                    className="hover:text-foreground transition-colors"
+                  >
                     {email.subject}
                   </Link>
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-muted">{signal}</td>
+                <td className="px-4 py-3 text-xs text-muted">
+                  {email.metadata.previewSignal}
+                </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={email.status} />
                 </td>
-                <td className="px-4 py-3 text-muted text-xs">{sourceLabel(email.source)}</td>
+                <td className="px-4 py-3 text-muted text-xs">
+                  {sourceLabel(email.source)}
+                </td>
                 <td className="px-4 py-3 text-muted text-xs whitespace-nowrap">
                   {formatReceivedAt(email.receivedAt)}
                 </td>
