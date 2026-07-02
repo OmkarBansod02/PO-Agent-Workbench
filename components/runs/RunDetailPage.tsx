@@ -7,6 +7,8 @@ import { AIExtractionCard } from "./AIExtractionCard";
 import { ExtractedOrderCard } from "./ExtractedOrderCard";
 import { ValidationBlockersCard } from "./ValidationBlockersCard";
 import { RouteDecisionCard } from "./RouteDecisionCard";
+import { ActionsCard } from "./ActionsCard";
+import { DraftReplyCard } from "./DraftReplyCard";
 import { AuditTrace } from "./AuditTrace";
 
 interface RunDetailPageProps {
@@ -66,6 +68,12 @@ export function RunDetailPage({ email, workflowRun }: RunDetailPageProps) {
           validationIssues={workflowRun.validationIssues}
           blockers={workflowRun.blockers}
         />
+
+        <ActionsCard actions={workflowRun.actions} />
+
+        {workflowRun.draftReply && (
+          <DraftReplyCard draftReply={workflowRun.draftReply} />
+        )}
 
         <RunSectionCard title="Original Email">
           <div className="space-y-2 text-foreground/80">
