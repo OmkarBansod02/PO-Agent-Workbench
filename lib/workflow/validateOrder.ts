@@ -3,6 +3,7 @@ import type {
   CatalogItem,
   Customer,
   ExtractedOrder,
+  HumanReviewApprovals,
   PurchaseOrderIntent,
   ValidationIssue,
 } from "../domain/types";
@@ -17,6 +18,7 @@ export interface ValidateOrderInput {
   confidence: number;
   uncertainFields: string[];
   referenceDate?: Date;
+  approvals?: HumanReviewApprovals;
 }
 
 function issue(
@@ -97,7 +99,10 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
     const remainingDays = daysUntil(order.dueDate, input.referenceDate ?? new Date());
     if (remainingDays === undefined) {
       issues.push(issue("INVALID_DUE_DATE", "The due date could not be interpreted safely.", "error", "dueDate"));
-    } else if (remainingDays <= mockRules.rush.thresholdDays) {
+    } else if (
+      remainingDays <= mockRules.rush.thresholdDays &&
+      !input.approvals?.rushApproved
+    ) {
       issues.push(
         issue(
           "RUSH_DUE_DATE",
@@ -109,7 +114,10 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
     }
   }
 
-  if (input.intent === "order_change") {
+  if (
+    input.intent === "order_change" &&
+    !input.approvals?.artworkChangeApproved
+  ) {
     issues.push(issue("ORDER_CHANGE_REQUIRES_REVIEW", "Changes to an existing order require human review.", "warning"));
   }
   if (input.intent === "reorder" && !order.productName) {
@@ -118,7 +126,8 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
   if (
     customer &&
     order.artworkReference &&
-    !customer.approvedArtworkRefs.includes(order.artworkReference)
+    !customer.approvedArtworkRefs.includes(order.artworkReference) &&
+    !input.approvals?.artworkChangeApproved
   ) {
     issues.push(issue("UNAPPROVED_ARTWORK", "The artwork reference is not on the customer's approved list.", "warning", "artworkReference"));
   }
@@ -139,7 +148,7 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
       issues.push(issue("SIZE_BREAKDOWN_MISMATCH", `The size breakdown totals ${sizeTotal}, not ${order.quantity}.`, "error", "sizeBreakdown"));
     }
   }
-  if (input.confidence < 0.65) {
+  if (input.confidence < 0.65 && !input.approvals?.customerConfirmed) {
     issues.push(issue("LOW_EXTRACTION_CONFIDENCE", "Extraction confidence is below the safe auto-processing threshold.", "warning"));
   }
 
@@ -163,7 +172,7 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
   const nonCriticalUncertainty = unresolvedUncertainty.filter(
     (field) => !criticalUncertainFields.has(field as keyof ExtractedOrder),
   );
-  if (criticalUncertainty.length > 0) {
+  if (criticalUncertainty.length > 0 && !input.approvals?.customerConfirmed) {
     issues.push(
       issue(
         "CRITICAL_UNCERTAIN_FIELDS",
@@ -172,7 +181,10 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
       ),
     );
   }
-  if (nonCriticalUncertainty.length > 0) {
+  if (
+    nonCriticalUncertainty.length > 0 &&
+    !input.approvals?.customerConfirmed
+  ) {
     issues.push(
       issue(
         "NON_CRITICAL_UNCERTAIN_FIELDS",
@@ -181,7 +193,7 @@ export function validateOrder(input: ValidateOrderInput): ValidationIssue[] {
       ),
     );
   }
-  if (input.intent === "unclear") {
+  if (input.intent === "unclear" && !input.approvals?.customerConfirmed) {
     issues.push(issue("UNCLEAR_INTENT", "The purchase order intent requires human confirmation.", "warning"));
   }
 

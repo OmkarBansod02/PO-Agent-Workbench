@@ -74,6 +74,12 @@ export interface ExtractedOrder {
   notes?: string;
 }
 
+export interface HumanReviewApprovals {
+  rushApproved?: boolean;
+  artworkChangeApproved?: boolean;
+  customerConfirmed?: boolean;
+}
+
 export interface ValidationIssue {
   id: string;
   code: string;
