@@ -13,6 +13,10 @@ export const mockCustomers: Customer[] = [
     approvedArtworkRefs: ["AL-HOODIE-PRIMARY-V3", "AL-EVENT-MARK-V2"],
     preferredDecorationMethod: "embroidery",
     preferredOrderSystem: "print_ops",
+    notes:
+      "Repeat event orders are usually complete and can use approved artwork without extra proof review.",
+    operatingProfile:
+      "Centralized events team, clear PO references, and a standing Atlanta event receiving location.",
   },
   {
     id: "customer-north-ridge",
@@ -26,6 +30,10 @@ export const mockCustomers: Customer[] = [
     approvedArtworkRefs: ["NR-MOUNTAIN-LOGO-V4", "NR-FIELD-TEAM-V2"],
     preferredDecorationMethod: "embroidery",
     preferredOrderSystem: "merch_ops",
+    notes:
+      "Rush field-team requests often arrive before purchasing has finalized PO and quantity details.",
+    operatingProfile:
+      "Distributed operations buyer with manual approval required for rush dates and uncertain headcount.",
   },
   {
     id: "customer-maple-works",
@@ -39,6 +47,10 @@ export const mockCustomers: Customer[] = [
     approvedArtworkRefs: ["MW-WORDMARK-2025-FINAL", "MW-MAKER-MARK-V3"],
     preferredDecorationMethod: "screen_print",
     preferredOrderSystem: "print_ops",
+    notes:
+      "Artwork revisions require proof approval before production even when the underlying order is a reorder.",
+    operatingProfile:
+      "Design-led customer with frequent artwork updates and a consistent Portland shipping destination.",
   },
   {
     id: "customer-cedar-peak",
@@ -52,9 +64,26 @@ export const mockCustomers: Customer[] = [
     approvedArtworkRefs: ["CP-SUMMIT-MARK-V2", "CP-CONFERENCE-LOCKUP-V5"],
     preferredDecorationMethod: "screen_print",
     preferredOrderSystem: "merch_ops",
+    notes:
+      "Conference freight dates are often fixed, so discontinued products or short lead times should block automation.",
+    operatingProfile:
+      "Event logistics team with hard delivery windows and manual review for any catalog or rush exception.",
   },
 ];
 
+function copyCustomer(customer: Customer): Customer {
+  return {
+    ...customer,
+    emailDomains: [...customer.emailDomains],
+    approvedArtworkRefs: [...customer.approvedArtworkRefs],
+  };
+}
+
+export function getCustomers(): Customer[] {
+  return mockCustomers.map(copyCustomer);
+}
+
 export function getCustomerById(id: string): Customer | undefined {
-  return mockCustomers.find((customer) => customer.id === id);
+  const customer = mockCustomers.find((candidate) => candidate.id === id);
+  return customer ? copyCustomer(customer) : undefined;
 }

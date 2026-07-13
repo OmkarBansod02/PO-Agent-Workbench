@@ -1,49 +1,17 @@
 import { PageHeader } from "../app/PageHeader";
+import { getCatalogItemById, getCatalogItems } from "@/lib/domain/mockCatalog";
+import type { DecorationMethod } from "@/lib/domain/types";
 
-const products = [
-  {
-    name: "Classic Pullover Hoodie",
-    sku: "H-200",
-    status: "Active",
-    minQty: 50,
-    decoration: "Screen print, Embroidery",
-    notes: "Standard 2-week lead time",
-  },
-  {
-    name: "Structured Cap",
-    sku: "C-110",
-    status: "Active",
-    minQty: 100,
-    decoration: "Embroidery only",
-    notes: "Rush available with 5-day lead",
-  },
-  {
-    name: "Canvas Tote Bag",
-    sku: "T-050",
-    status: "Active",
-    minQty: 200,
-    decoration: "Screen print, Heat transfer",
-    notes: "Artwork must be vector format",
-  },
-  {
-    name: "Performance Polo",
-    sku: "P-300",
-    status: "Discontinued",
-    minQty: 75,
-    decoration: "Embroidery",
-    notes: "Replacement: P-310 Dry-fit Polo",
-  },
-  {
-    name: "Crew Neck T-Shirt",
-    sku: "TS-100",
-    status: "Active",
-    minQty: 100,
-    decoration: "Screen print, DTG",
-    notes: "Size breakdown required for orders > 200",
-  },
-];
+const decorationMethodLabels: Record<DecorationMethod, string> = {
+  embroidery: "Embroidery",
+  screen_print: "Screen print",
+  direct_to_garment: "Direct to garment",
+  heat_transfer: "Heat transfer",
+};
 
 export function CatalogPage() {
+  const products = getCatalogItems();
+
   return (
     <div>
       <PageHeader
@@ -64,21 +32,34 @@ export function CatalogPage() {
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product.sku} className="border-b border-border last:border-0">
+              <tr key={product.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-medium text-foreground">{product.name}</td>
                 <td className="px-4 py-3 font-mono text-xs text-muted">{product.sku}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    product.status === "Active"
+                    product.status === "active"
                       ? "bg-success/10 text-success"
                       : "bg-danger/10 text-danger"
                   }`}>
-                    {product.status}
+                    {product.status === "active" ? "Active" : "Discontinued"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-xs text-muted">{product.minQty}</td>
-                <td className="px-4 py-3 text-xs text-foreground/70">{product.decoration}</td>
-                <td className="px-4 py-3 text-xs text-muted">{product.notes}</td>
+                <td className="px-4 py-3 text-xs text-muted">{product.minimumQuantity}</td>
+                <td className="px-4 py-3 text-xs text-foreground/70">
+                  {product.supportedDecorationMethods
+                    .map((method) => decorationMethodLabels[method])
+                    .join(", ")}
+                </td>
+                <td className="px-4 py-3 text-xs text-muted max-w-md">
+                  {[
+                    ...product.validationNotes,
+                    product.replacementProductId
+                      ? `Replacement: ${getCatalogItemById(product.replacementProductId)?.name ?? product.replacementProductId}`
+                      : undefined,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -177,6 +177,8 @@ export type DecorationMethod =
 
 export type PreferredOrderSystem = "print_ops" | "merch_ops";
 
+export type CatalogItemStatus = "active" | "discontinued";
+
 export interface Customer {
   id: string;
   name: string;
@@ -188,6 +190,8 @@ export interface Customer {
   approvedArtworkRefs: string[];
   preferredDecorationMethod: DecorationMethod;
   preferredOrderSystem: PreferredOrderSystem;
+  notes: string;
+  operatingProfile: string;
 }
 
 export interface CatalogItem {
@@ -195,8 +199,12 @@ export interface CatalogItem {
   sku: string;
   name: string;
   category: "apparel" | "headwear" | "bags";
+  status: CatalogItemStatus;
   active: boolean;
+  minimumQuantity: number;
   requiresArtwork: boolean;
   supportedDecorationMethods: DecorationMethod[];
+  validationNotes: string[];
   discontinuedReason?: string;
+  replacementProductId?: string;
 }

@@ -37,3 +37,23 @@ export const poIntakeWorkflowDefinition: WorkflowDefinition = {
 export const workflowDefinitions: WorkflowDefinition[] = [
   poIntakeWorkflowDefinition,
 ];
+
+function copyWorkflowDefinition(
+  definition: WorkflowDefinition,
+): WorkflowDefinition {
+  return {
+    ...definition,
+    steps: definition.steps.map((step) => ({ ...step })),
+  };
+}
+
+export function getWorkflowDefinitions(): WorkflowDefinition[] {
+  return workflowDefinitions.map(copyWorkflowDefinition);
+}
+
+export function getWorkflowDefinitionById(
+  id: string,
+): WorkflowDefinition | undefined {
+  const definition = workflowDefinitions.find((candidate) => candidate.id === id);
+  return definition ? copyWorkflowDefinition(definition) : undefined;
+}

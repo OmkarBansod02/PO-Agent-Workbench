@@ -1,30 +1,32 @@
 import { PageHeader } from "../app/PageHeader";
+import { getCustomers } from "@/lib/domain/mockCustomers";
+import type {
+  DecorationMethod,
+  PreferredOrderSystem,
+  RushApprovalPolicy,
+} from "@/lib/domain/types";
 
-const customers = [
-  {
-    name: "Arbor Lane Co.",
-    shipping: "42 Industrial Pkwy, Columbus OH 43215",
-    rushPolicy: "Auto-approve up to 500 units",
-    artwork: "arborlane-logo-v3.ai, arborlane-wordmark.pdf",
-    orderSystem: "Simulated adapter",
-  },
-  {
-    name: "North Ridge Supply",
-    shipping: "118 Distribution Dr, Denver CO 80216",
-    rushPolicy: "Requires manual approval",
-    artwork: "northridge-emblem.ai",
-    orderSystem: "Simulated adapter",
-  },
-  {
-    name: "Maple Works Studio",
-    shipping: "7 Design Row, Portland OR 97201",
-    rushPolicy: "Auto-approve under 200 units",
-    artwork: "maple-tree-icon.svg, maple-type-lockup.ai",
-    orderSystem: "Simulated adapter",
-  },
-];
+const rushPolicyLabels: Record<RushApprovalPolicy, string> = {
+  pre_approved: "Pre-approved",
+  manual_review: "Requires manual review",
+  not_allowed: "Not allowed",
+};
+
+const decorationMethodLabels: Record<DecorationMethod, string> = {
+  embroidery: "Embroidery",
+  screen_print: "Screen print",
+  direct_to_garment: "Direct to garment",
+  heat_transfer: "Heat transfer",
+};
+
+const orderSystemLabels: Record<PreferredOrderSystem, string> = {
+  print_ops: "Print Ops",
+  merch_ops: "Merch Ops",
+};
 
 export function CustomersPage() {
+  const customers = getCustomers();
+
   return (
     <div>
       <PageHeader
@@ -33,13 +35,17 @@ export function CustomersPage() {
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {customers.map((customer) => (
-          <div key={customer.name} className="border border-border rounded-lg bg-surface p-4">
+          <div key={customer.id} className="border border-border rounded-lg bg-surface p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{customer.name}</h3>
             <div className="space-y-2">
-              <ConfigRow label="Default shipping" value={customer.shipping} />
-              <ConfigRow label="Rush approval policy" value={customer.rushPolicy} />
-              <ConfigRow label="Approved artwork refs" value={customer.artwork} />
-              <ConfigRow label="Preferred order system" value={customer.orderSystem} />
+              <ConfigRow label="CRM ID" value={customer.crmId} />
+              <ConfigRow label="Default shipping" value={customer.defaultShippingLocation} />
+              <ConfigRow label="Rush approval policy" value={rushPolicyLabels[customer.rushApprovalPolicy]} />
+              <ConfigRow label="Approved artwork refs" value={customer.approvedArtworkRefs.join(", ")} />
+              <ConfigRow label="Preferred decoration" value={decorationMethodLabels[customer.preferredDecorationMethod]} />
+              <ConfigRow label="Preferred order system" value={orderSystemLabels[customer.preferredOrderSystem]} />
+              <ConfigRow label="Operating profile" value={customer.operatingProfile} />
+              <ConfigRow label="Notes" value={customer.notes} />
             </div>
           </div>
         ))}
