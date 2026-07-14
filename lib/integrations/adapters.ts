@@ -77,25 +77,25 @@ export interface IntegrationStatusSummary {
 export const integrationStatuses: IntegrationStatusSummary[] = [
   {
     id: "demo-inbox",
-    name: "Demo Inbox",
+    name: "Inbox",
     category: "email_intake",
     status: "connected",
-    mode: "Local sample data",
+    mode: "Connected — local data source",
     description:
-      "Loads representative purchase order emails from local demo fixtures.",
+      "Loads purchase order emails and makes them available as workflow inputs.",
     safetyNote:
-      "No external mailbox is read; demo metadata is only used for local navigation and summaries.",
+      "Currently connected to a local data source. Can be replaced with a live mailbox adapter in production.",
   },
   {
     id: "agentmail",
     name: "AgentMail",
     category: "ai_mailbox",
     status: "not_configured",
-    mode: "Disabled",
+    mode: "Not configured",
     description:
-      "Reserved intake boundary for a future production email source.",
+      "Reserved integration boundary for a production email intake source.",
     safetyNote:
-      "No AgentMail calls are made in this demo and no credentials are required.",
+      "No credentials are configured and no external calls are made.",
   },
   {
     id: "order-system",
@@ -104,9 +104,9 @@ export const integrationStatuses: IntegrationStatusSummary[] = [
     status: "simulated",
     mode: "Simulated adapter active",
     description:
-      "Prepares mock print or merchandise job payloads after deterministic validation passes.",
+      "Prepares print or merchandise job payloads after deterministic validation passes.",
     safetyNote:
-      "The adapter returns local mock job records and never writes to a real order system.",
+      "Returns local job records. In production, this adapter connects to an order management system.",
   },
   {
     id: "crm",
@@ -115,9 +115,9 @@ export const integrationStatuses: IntegrationStatusSummary[] = [
     status: "simulated",
     mode: "Simulated adapter active",
     description:
-      "Prepares mock CRM activity payloads linked to workflow run identifiers.",
+      "Logs activity payloads linked to workflow runs and customer records.",
     safetyNote:
-      "The adapter creates local mock activity records only; no CRM API is called.",
+      "Creates local activity records only. In production, this adapter connects to a CRM platform.",
   },
   {
     id: "customer-reply",
@@ -126,9 +126,9 @@ export const integrationStatuses: IntegrationStatusSummary[] = [
     status: "draft_only",
     mode: "Draft-only mode",
     description:
-      "Generates confirmation or clarification reply drafts for operator review.",
+      "Generates confirmation or clarification reply drafts for operator review before sending.",
     safetyNote:
-      "Replies are never sent automatically; every generated message stays draft-only.",
+      "Replies are never sent automatically. Every generated message stays draft-only until operator approval.",
   },
 ];
 

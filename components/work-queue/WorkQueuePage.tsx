@@ -24,7 +24,7 @@ export function WorkQueuePage() {
         subtitle="Incoming purchase order emails ready for workflow processing"
       />
 
-      <div className="border border-border rounded-lg bg-surface px-4 py-3 mb-5">
+      <div className="rounded-xl border border-border/80 bg-surface px-4 py-3 mb-5 shadow-sm">
         <div className="text-sm font-medium text-foreground">
           Email → Extract → Validate → Route → Actions → Reply
         </div>

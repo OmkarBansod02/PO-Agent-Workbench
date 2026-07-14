@@ -1,6 +1,6 @@
 export function Topbar() {
   return (
-    <header className="h-11 border-b border-border bg-surface flex items-center justify-between px-4 shrink-0">
+    <header className="h-11 border-b border-border/60 bg-surface flex items-center justify-between px-4 shrink-0">
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-foreground">PO Agent Workbench</span>
         <span className="text-xs text-muted">Purchase Order Intake</span>

@@ -14,7 +14,7 @@ const colorMap = {
 
 export function MetricCard({ label, value, color = "default" }: MetricCardProps) {
   return (
-    <div className="border border-border rounded-lg bg-surface px-4 py-3">
+    <div className="rounded-xl border border-border/80 bg-surface px-4 py-3 shadow-sm">
       <div className={`text-2xl font-semibold ${colorMap[color]}`}>{value}</div>
       <div className="text-xs text-muted mt-0.5">{label}</div>
     </div>

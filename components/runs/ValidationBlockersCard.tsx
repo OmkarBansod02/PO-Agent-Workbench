@@ -76,7 +76,7 @@ export function ValidationBlockersCard({
           )}
 
           {blockers.filter((b) => b.blocksProgress).length > 0 && (
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border/40 pt-3">
               <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">
                 Blockers ({blockers.filter((b) => b.blocksProgress).length})
               </h4>

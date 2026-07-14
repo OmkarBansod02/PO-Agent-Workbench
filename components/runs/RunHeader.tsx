@@ -11,7 +11,7 @@ interface RunHeaderProps {
 }
 
 function sourceLabel(source: string): string {
-  if (source === "demo") return "Demo Inbox";
+  if (source === "demo") return "Inbox";
   if (source === "agentmail") return "AgentMail";
   return source;
 }
@@ -25,7 +25,7 @@ export function RunHeader({
   receivedAt,
 }: RunHeaderProps) {
   return (
-    <div className="border border-border rounded-lg bg-surface px-5 py-4 mb-5">
+    <div className="rounded-xl border border-border/80 bg-surface px-5 py-4 mb-5 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
         <Link
           href="/work-queue"

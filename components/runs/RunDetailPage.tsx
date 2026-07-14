@@ -15,7 +15,7 @@ export function RunDetailPage({ email, workflowRun }: RunDetailPageProps) {
 export function RunDetailNotFound({ emailId }: { emailId: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-24">
-      <div className="border border-border rounded-lg bg-surface px-8 py-10 text-center max-w-md">
+      <div className="rounded-xl border border-border/80 bg-surface px-8 py-10 text-center max-w-md shadow-sm">
         <h2 className="text-base font-semibold text-foreground mb-2">
           Email not found
         </h2>

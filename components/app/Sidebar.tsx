@@ -15,8 +15,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-56 border-r border-border bg-surface flex flex-col shrink-0">
-      <div className="px-4 py-4 border-b border-border">
+    <aside className="w-56 border-r border-border/60 bg-surface flex flex-col shrink-0">
+      <div className="px-4 py-4 border-b border-border/60">
         <div className="text-sm font-semibold text-foreground">PO Agent Workbench</div>
         <div className="text-xs text-muted mt-0.5">Purchase Order Intake</div>
       </div>
@@ -40,8 +40,8 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="px-4 py-3 border-t border-border">
-        <div className="text-[11px] text-muted">Phase 0 · Local Demo</div>
+      <div className="px-4 py-3 border-t border-border/60">
+        <div className="text-[11px] text-muted/60">v0.1.0</div>
       </div>
     </aside>
   );

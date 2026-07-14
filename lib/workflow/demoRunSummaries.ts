@@ -8,9 +8,8 @@ export interface DemoWorkflowRunSummary {
   emailId: string;
   customerName: string;
   subject: string;
-  source: "Demo Inbox";
+  source: "Inbox";
   state: WorkflowRunStatus;
-  stateLabel: string;
   outcomeSummary: string;
   lastUpdated: string;
   linkTarget: string;
@@ -22,19 +21,13 @@ const outcomeState: Record<DemoExpectedOutcome, WorkflowRunStatus> = {
   blocked: "blocked",
 };
 
-const stateLabels: Record<DemoExpectedOutcome, string> = {
-  completed: "Expected completed",
-  needs_review: "Expected needs review",
-  blocked: "Expected blocked",
-};
-
 const outcomeSummaries: Record<DemoExpectedOutcome, string> = {
   completed:
-    "Clean order should prepare a mock order-system job, CRM activity, and confirmation draft.",
+    "Order job prepared, CRM activity logged, confirmation draft ready.",
   needs_review:
-    "Missing, uncertain, or risky details should create a human review task before downstream actions.",
+    "Routed to human review — missing or uncertain fields require operator input.",
   blocked:
-    "Unsafe catalog or required-data issues should block job creation and prepare a clarification draft.",
+    "Blocked — catalog or data issues prevent automatic job creation.",
 };
 
 export function getDemoRunSummaries(): DemoWorkflowRunSummary[] {
@@ -47,9 +40,8 @@ export function getDemoRunSummaries(): DemoWorkflowRunSummary[] {
       emailId: email.id,
       customerName: customer?.name ?? email.fromName,
       subject: email.subject,
-      source: "Demo Inbox",
+      source: "Inbox",
       state: outcomeState[expectedOutcome],
-      stateLabel: stateLabels[expectedOutcome],
       outcomeSummary: outcomeSummaries[expectedOutcome],
       lastUpdated: email.receivedAt,
       linkTarget: `/runs/${email.id}`,

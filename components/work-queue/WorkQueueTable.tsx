@@ -20,7 +20,7 @@ function formatReceivedAt(iso: string): string {
 }
 
 function sourceLabel(source: string): string {
-  if (source === "demo") return "Demo Inbox";
+  if (source === "demo") return "Inbox";
   if (source === "agentmail") return "AgentMail";
   return source;
 }
@@ -32,33 +32,33 @@ interface WorkQueueTableProps {
 export function WorkQueueTable({ emails }: WorkQueueTableProps) {
   if (emails.length === 0) {
     return (
-      <div className="border border-border rounded-lg bg-surface px-6 py-12 text-center">
+      <div className="rounded-xl border border-border/80 bg-surface px-6 py-12 text-center shadow-sm">
         <p className="text-sm text-muted">No emails in the work queue.</p>
       </div>
     );
   }
 
   return (
-    <div className="border border-border rounded-lg bg-surface overflow-hidden">
+    <div className="rounded-xl border border-border/80 bg-surface overflow-hidden shadow-sm">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-background">
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+          <tr className="border-b border-border/60 bg-background/60">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Customer
             </th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Subject
             </th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Signal
             </th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Status
             </th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Source
             </th>
-            <th className="text-left px-4 py-2.5 font-medium text-muted text-xs">
+            <th className="text-left px-4 py-3 font-medium text-muted text-xs">
               Received
             </th>
           </tr>
@@ -70,7 +70,7 @@ export function WorkQueueTable({ emails }: WorkQueueTableProps) {
             return (
               <tr
                 key={email.id}
-                className="border-b border-border last:border-0 hover:bg-foreground/[0.03] transition-colors cursor-pointer group"
+                className="border-b border-border/40 last:border-0 hover:bg-accent/[0.03] transition-colors cursor-pointer group"
               >
                 <td className="px-4 py-3">
                   <Link

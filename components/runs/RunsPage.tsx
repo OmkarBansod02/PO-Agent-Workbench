@@ -6,7 +6,7 @@ export function RunsPage() {
     <div>
       <PageHeader
         title="Workflow Runs"
-        subtitle="History of all purchase order workflow executions"
+        subtitle="All purchase order workflow executions and their current state"
       />
       <RunsTable />
     </div>

@@ -43,7 +43,7 @@ export function AuditTrace({ traceEvents }: AuditTraceProps) {
 
   return (
     <RunSectionCard title="Audit Trace">
-      <ol className="relative border-l border-border ml-2">
+      <ol className="relative border-l border-border/60 ml-2">
         {traceEvents.map((event, idx) => (
           <li
             key={event.id}

@@ -274,7 +274,7 @@ export function HumanReviewPanel({
         </fieldset>
 
         {(showRushApproval || showArtworkApproval) && (
-          <div className="border-t border-border pt-4">
+          <div className="border-t border-border/40 pt-4">
             <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">
               Approvals
             </h4>
@@ -308,7 +308,7 @@ export function HumanReviewPanel({
           </div>
         )}
 
-        <div className="border-t border-border pt-4 space-y-3">
+        <div className="border-t border-border/40 pt-4 space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FieldInput
               label="Reviewer"

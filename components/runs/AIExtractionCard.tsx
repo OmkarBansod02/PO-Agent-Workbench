@@ -70,7 +70,7 @@ export function AIExtractionCard({
         </div>
 
         {extractionSummary && (
-          <div className="border-t border-border pt-3">
+          <div className="border-t border-border/40 pt-3">
             <span className="text-muted text-xs">Summary</span>
             <p className="text-sm text-foreground/80 mt-0.5">
               {extractionSummary}
